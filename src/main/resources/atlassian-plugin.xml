@@ -1,0 +1,15 @@
+<atlassian-plugin key="${plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+    </plugin-info>
+
+    <scoped-modules key="modules" location="/modules" />
+
+    <scoped-web-item key="stylicious-web-item" section="system.user/user-preferences" weight="100">
+        <label>Stylicious</label>
+        <link>/</link>
+        <styleClass>stylicious-web-item</styleClass>
+    </scoped-web-item>
+</atlassian-plugin>
