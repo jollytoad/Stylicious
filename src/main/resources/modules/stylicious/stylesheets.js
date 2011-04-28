@@ -1,8 +1,9 @@
-/*! Copyright 2011 Mark Gibson */
 /**
  * Provides the main utility functions for loading, saving and applying style sheets.
  * @public
  */
+
+/*! Copyright 2011 Mark Gibson */
 
 /*global require, exports, localStorage */
 

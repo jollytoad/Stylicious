@@ -1,9 +1,10 @@
-/*! Copyright 2011 Mark Gibson */
 /**
  * Stylicious Editor
  *
  * @context atl.general
  */
+
+/*! Copyright 2011 Mark Gibson */
 
 /*global require, document, setTimeout */
 
