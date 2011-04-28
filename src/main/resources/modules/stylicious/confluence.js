@@ -6,7 +6,7 @@
 /*global require, exports */
 
 var $ = require("speakeasy/jquery").jQuery,
-    AJS = require("./ajs").AJS;
+    AJS = require("stylicious/ajs").AJS;
 
 function dashboard() {
     return $("body").hasClass("dashboard");

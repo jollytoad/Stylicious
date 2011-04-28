@@ -1,12 +1,11 @@
 /**
  * Stylicious Editor
- *
- * @context atl.general
+ * @public
  */
 
 /*! Copyright 2011 Mark Gibson */
 
-/*global require, document, setTimeout */
+/*global require, exports */
 
 var stylicious = require("stylicious/stylesheets"),
     confluence = require("stylicious/confluence"),
@@ -33,7 +32,7 @@ function panelContent(type, id) {
         val: stylicious.getStyleSheet(type, id)});
 }
 
-function openStyliciousEditor() {
+function openEditor() {
     var dialog = new AJS.Dialog({width:500, height:450, id:"stylicious-dialog"});
 
     dialog.addHeader("Stylicious");
@@ -62,11 +61,4 @@ function openStyliciousEditor() {
     dialog.show();
 }
 
-$(".stylicious-web-item").live('click', function(event) {
-    event.preventDefault();
-    setTimeout(function() {
-        $(document).trigger("stylicious-open");
-    },0);
-});
-
-$(document).bind("stylicious-open", openStyliciousEditor);
+exports.openEditor = openEditor;
