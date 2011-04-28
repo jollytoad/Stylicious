@@ -50,12 +50,12 @@ function openStyliciousEditor() {
         // Save style sheets from editors and apply
         forEachEditor(stylicious.saveStyleSheet);
         stylicious.applyStyleSheets(confluence);
-        dialog.hide();
+        dialog.remove();
     });
     dialog.addCancel("Cancel", function(dialog) {
         // Reset to saved style sheets
         stylicious.applyStyleSheets(confluence);
-        dialog.hide();
+        dialog.remove();
     });
 
     dialog.show();
