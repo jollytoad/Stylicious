@@ -50,11 +50,11 @@ function forEachStyleSheet(context, fn) {
         }
     }
 
-    fn("global", true);
+    callFn("global", true);
 
     if (context) {
         if (!callFn("space", context.spaceKey)) {
-            fn("nospace", true);
+            callFn("nospace", true);
             callFn("dashboard", context.dashboard);
         }
         callFn("page", context.pageId);
