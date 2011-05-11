@@ -20,3 +20,10 @@ $(".stylicious-web-item").live('click', function(event) {
 $(document).bind("stylicious-open", function() {
     require("stylicious/editor").openEditor();
 });
+
+$(".selectacular-web-item").live('click', function(event) {
+    event.preventDefault();
+    setTimeout(function() {
+        require("selectacular/selector").start();
+    },0);
+});

@@ -12,4 +12,15 @@
         <link>/</link>
         <styleClass>stylicious-web-item</styleClass>
     </scoped-web-item>
+
+    <scoped-web-item key="selectacular-web-item" section="system.user/user-preferences" weight="110">
+        <label>Selectacular</label>
+        <link>/</link>
+        <styleClass>selectacular-web-item</styleClass>
+    </scoped-web-item>
+
+    <scoped-web-resource key="selectacular-css">
+        <resource type="download" name="selectacular.css" location="css/selectacular.css"/>
+        <context>atl.general</context>
+    </scoped-web-resource>
 </atlassian-plugin>

@@ -1,0 +1,72 @@
+#selectacular-ui {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    max-width: 100%;
+    font-family: sans-serif;
+    font-size: 9px;
+    z-index: 10000;
+}
+
+#selectacular-path {
+	overflow-x: auto;
+}
+
+#selectacular-path ol {
+	display: table-row;
+}
+#selectacular-path li {
+	display: table-cell;
+	vertical-align: bottom;
+}
+#selectacular-path .combinator {
+	font-size: 9px;
+}
+#selectacular-path .option {
+	font-weight: normal;
+	white-space: nowrap;
+	padding: 2px;
+	margin: 1px;
+	font-size: 9px;
+	line-height: 1;
+	background-color: rgba(100%,100%,100%,0.8);
+	cursor: default;
+}
+#selectacular-path .select {
+	background-color: white;
+	border: 1px dotted rgba(0,0,0,0.5);
+	padding: 1px;
+}
+#selectacular-path .id {
+	color: #a00;
+}
+#selectacular-path .class {
+	color: #00a;
+}
+#selectacular-path .pseudo-class {
+	color: #aa0;
+}
+#selectacular-path .tag {
+	color: black;
+}
+
+#selectacular-expr {
+	margin: 1px 0;
+}
+#selectacular-expr input {
+	width: 100%;
+	border: none;
+	padding: 0;
+	margin: 0;
+	font-size: 11px;
+	font-weight: bold;
+	word-spacing: 0.5em;
+}
+
+.SELECTACULAR-HOVER {
+    outline: 2px solid red !important;
+}
+
+.SELECTACULAR-SELECT {
+    outline: 2px solid blue !important;
+}
