@@ -109,13 +109,22 @@ function createPathFinder( elem ) {
 
 function highlightSelection(selector) {
     $(".SELECTACULAR-SELECT").removeClass('SELECTACULAR-SELECT');
-    $(selector).not('.SELECTACULAR').addClass('SELECTACULAR-SELECT');
-    //updateCSS(this.value);
+    if (selector) {
+        $(selector).not('.SELECTACULAR').addClass('SELECTACULAR-SELECT');
+    }
+}
+
+function selector() {
+    return $("#selectacular-expr > input").val();
 }
 
 function open() {
     if (!ui) {
-        ui = $('<div id="selectacular-ui"><div id="selectacular-path"></div><div id="selectacular-expr"><input type="text"/></div></div>').appendTo("body");
+        ui = $('<div id="selectacular-ui" class="bottom left"/>')
+                .append($('<div id="selectacular-path"/>'))
+                .append($('<div id="selectacular-expr"><input type="text"/></div>'))
+                .append($('<div id="selectacular-tools"/>'))
+                .appendTo("body");
 
         $("#selectacular-expr > input")
             .bind('change', function() {
@@ -132,6 +141,7 @@ function open() {
 }
 
 function close() {
+    highlightSelection();
     if (ui) {
         ui.remove();
         ui = undefined;
@@ -144,6 +154,7 @@ function select(target) {
         $("#selectacular-expr > input").val(selectorForElement(target));
         selected = target;
     }
+    return exports;
 }
 
 function stop() {
@@ -159,8 +170,6 @@ function freeze(target) {
 }
 
 function start() {
-    console.log("Start Selectacular");
-
     open();
 
     $(document)
@@ -185,8 +194,25 @@ function start() {
         .bind("mouseup.selectacular click.selectacular", function() {
             return false;
         });
+
+    return exports;
+}
+
+function tools() {
+    return $("#selectacular-tools");
+}
+
+function addTool(name, elem) {
+    $("#selectacular-tool-"+name).remove();
+    $('<div class="selectacular-tool"/>').attr("id", "selectacular-tool-"+name).append(elem).appendTo(tools());
+    return exports;
 }
 
 exports.start = start;
 exports.stop = stop;
+exports.open = open;
+exports.close = close;
 exports.select = select;
+exports.tools = tools;
+exports.addTool = addTool;
+exports.selector = selector;

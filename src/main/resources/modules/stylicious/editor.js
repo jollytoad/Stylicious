@@ -9,6 +9,7 @@
 
 var stylicious = require("stylicious/stylesheets"),
     confluence = require("stylicious/confluence"),
+    selectacular = require("selectacular/selector"),
     $ = require("speakeasy/jquery").jQuery,
     AJS = require("stylicious/ajs").AJS;
 
@@ -32,6 +33,33 @@ function panelContent(type, id) {
         val: stylicious.getStyleSheet(type, id)});
 }
 
+function replaceSelection(text) {
+    return function() {
+        if ('selectionStart' in this) {
+            // Most browsers
+            this.value = this.value.slice(0, this.selectionStart) + text + this.value.slice(this.selectionEnd);
+        } else if (document.selection) {
+            // IE
+            this.focus();
+            document.selection.createRange().text = text;
+        } else {
+            // Unsupported
+            this.value += text;
+        }
+    };
+}
+
+function openSelectacular(callback) {
+    function insertSelector(event) {
+        event.preventDefault();
+        var selector = selectacular.selector();
+        selectacular.close();
+        callback(selector);
+    }
+    var insertTool = $('<a href="#" title="Insert into Stylicious">$</a>').bind("click", insertSelector);
+    selectacular.start().addTool("insert-in-stylicious", insertTool);
+}
+
 function openEditor() {
     var dialog = new AJS.Dialog({width:500, height:450, id:"stylicious-dialog"});
 
@@ -42,6 +70,16 @@ function openEditor() {
     }
     stylicious.forEachStyleSheet(confluence, addEditorPanel);
 
+    dialog.addButton("Selectacular", function(dialog) {
+        dialog.hide();
+        openSelectacular(function(selector) {
+            dialog.show();
+            console.log(selector);
+            if (selector) {
+                dialog.getCurrentPanel().body.find("textarea.stylicious-editor").each(replaceSelection(selector));
+            }
+        });
+    });
     dialog.addButton("Apply", function() {
         // Apply style sheets from editors
         forEachEditor(stylicious.applyStyleSheet);
