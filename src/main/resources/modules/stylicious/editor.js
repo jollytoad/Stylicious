@@ -5,13 +5,13 @@
 
 /*! Copyright 2011 Mark Gibson */
 
-/*global require, exports */
+/*global require, exports, document */
 
 var stylicious = require("stylicious/stylesheets"),
     confluence = require("stylicious/confluence"),
-    selectacular = require("selectacular/selector"),
     $ = require("speakeasy/jquery").jQuery,
-    AJS = require("stylicious/ajs").AJS;
+    AJS = require("common/ajs").AJS,
+    optional = require("common/optional").optional;
 
 var types = {
     "global": "Everywhere",
@@ -20,6 +20,9 @@ var types = {
     "space": "This space only",
     "page": "This page only"
 };
+
+var dialog,
+    selector;
 
 function forEachEditor(styleSheetFn) {
     $("textarea.stylicious-editor").each(function() {
@@ -35,12 +38,15 @@ function panelContent(type, id) {
 
 function replaceSelection(text) {
     return function() {
+        this.focus();
         if ('selectionStart' in this) {
             // Most browsers
-            this.value = this.value.slice(0, this.selectionStart) + text + this.value.slice(this.selectionEnd);
+            var start = this.selectionStart;
+            this.value = this.value.slice(0, start) + text + this.value.slice(this.selectionEnd);
+            this.selectionStart = start;
+            this.selectionEnd = start + text.length;
         } else if (document.selection) {
             // IE
-            this.focus();
             document.selection.createRange().text = text;
         } else {
             // Unsupported
@@ -49,19 +55,21 @@ function replaceSelection(text) {
     };
 }
 
-function openSelectacular(callback) {
-    function insertSelector(event) {
-        event.preventDefault();
-        var selector = selectacular.selector();
-        selectacular.close();
-        callback(selector);
+function insertSelector() {
+    if (dialog && selector) {
+        dialog.getCurrentPanel().body.find("textarea.stylicious-editor").each(replaceSelection(selector));
     }
-    var insertTool = $('<a href="#" title="Insert into Stylicious">$</a>').bind("click", insertSelector);
-    selectacular.start().addTool("insert-in-stylicious", insertTool);
+}
+
+function closeEditor() {
+    if (dialog) {
+        dialog.remove();
+        dialog = undefined;
+    }
 }
 
 function openEditor() {
-    var dialog = new AJS.Dialog({width:500, height:450, id:"stylicious-dialog"});
+    dialog = new AJS.Dialog({width:500, height:450, id:"stylicious-dialog"});
 
     dialog.addHeader("Stylicious");
 
@@ -70,33 +78,48 @@ function openEditor() {
     }
     stylicious.forEachStyleSheet(confluence, addEditorPanel);
 
-    dialog.addButton("Selectacular", function(dialog) {
-        dialog.hide();
-        openSelectacular(function(selector) {
-            dialog.show();
-            console.log(selector);
-            if (selector) {
-                dialog.getCurrentPanel().body.find("textarea.stylicious-editor").each(replaceSelection(selector));
-            }
+    if (selector) {
+        dialog.addButton("Insert", function(dialog) {
+            insertSelector();
+        });
+    }
+
+    optional("selectacular/selector", function(selectacular) {
+        dialog.addButton("Selectacular", function(dialog) {
+            dialog.hide();
+            selectacular.start();
         });
     });
+
     dialog.addButton("Apply", function() {
         // Apply style sheets from editors
         forEachEditor(stylicious.applyStyleSheet);
     });
-    dialog.addSubmit("Ok", function(dialog) {
+    dialog.addSubmit("Ok", function() {
         // Save style sheets from editors and apply
         forEachEditor(stylicious.saveStyleSheet);
         stylicious.applyStyleSheets(confluence);
-        dialog.remove();
+        closeEditor();
     });
-    dialog.addCancel("Cancel", function(dialog) {
+    dialog.addCancel("Cancel", function() {
         // Reset to saved style sheets
         stylicious.applyStyleSheets(confluence);
-        dialog.remove();
+        closeEditor();
     });
 
     dialog.show();
 }
 
+function selectacularAction(newSelector) {
+    console.log(newSelector);
+    selector = newSelector;
+    if (dialog) {
+        dialog.show();
+        insertSelector();
+    } else {
+        openEditor();
+    }
+}
+
 exports.openEditor = openEditor;
+exports.selectacularAction = selectacularAction;

@@ -8,8 +8,10 @@
 /*global require, exports, document, window */
 
 var $ = require("speakeasy/jquery").jQuery,
-    AJS = require("stylicious/ajs").AJS,
-    ui,
+    AJS = require("common/ajs").AJS,
+    tools = require("selectacular/tools");
+
+var ui,
     selected,
     keyTimeout,
     selectTimeout;
@@ -27,7 +29,7 @@ function toggleSelectorOption(event) {
         $('.tag.select', this).each(add);
         $('.id.select', this).each(add);
         $('.class.select', this).each(add);
-        selector += $(this).nextUntil("li:has(.select)").length == 1 ? ' > ' : ' ';
+        selector += $(this).nextUntil("li:has(.select)").length === 1 ? ' > ' : ' ';
     });
 
     $('#selectacular-expr > input').val(selector).trigger('change');
@@ -78,6 +80,12 @@ function createPathFinder( elem ) {
     var path = $('<ol/>'),
         step, tag, pos;
 
+    function addClassOption(i, name) {
+        if ( name.length && !/^SELECTACULAR/.test(name) ) {
+            createSelectorOption('.' + name, 'class').appendTo(step);
+        }
+    }
+
     while ( elem ) {
         step = $('<li class="selector"/>');
         tag = elem.nodeName.toLowerCase();
@@ -86,11 +94,7 @@ function createPathFinder( elem ) {
             createSelectorOption('#' + elem.id, 'id').appendTo(step);
         }
 
-        $.each($.trim(elem.className).split(/\s+/), function(i, name) {
-            if ( name.length && !/^SELECTACULAR/.test(name) ) {
-                createSelectorOption('.' + name, 'class').appendTo(step);
-            }
-        });
+        $.each($.trim(elem.className).split(/\s+/), addClassOption);
 
         createSelectorOption(tag, 'tag').appendTo(step);
 
@@ -118,13 +122,55 @@ function selector() {
     return $("#selectacular-expr > input").val();
 }
 
+function close() {
+    highlightSelection();
+    if (ui) {
+        ui.remove();
+        ui = undefined;
+    }
+}
+
+function toolAction(id, selector) {
+    var options = tools.getTool(id);
+    if (options && options.action && selector) {
+        options.action(selector);
+    }
+    if (options.close) {
+        close();
+    }
+}
+
+function createTool(id, options) {
+    console.log(id, options);
+    return $('<a/>', {
+        href: "#",
+        "class": "selectacular-tool",
+        id: "selectacular-tool-" + id,
+        title: options.desc,
+        text: options.label,
+        click: function(event) {
+            event.preventDefault();
+            toolAction(id, selector());
+        }
+    });
+}
+
 function open() {
     if (!ui) {
+        var toolbar = $('<div id="selectacular-tools"/>');
+
         ui = $('<div id="selectacular-ui" class="bottom left"/>')
                 .append($('<div id="selectacular-path"/>'))
                 .append($('<div id="selectacular-expr"><input type="text"/></div>'))
-                .append($('<div id="selectacular-tools"/>'))
+                .append(toolbar)
                 .appendTo("body");
+
+        tools.forEachTool(function(id, options) {
+            var tool = createTool(id, options);
+            console.log(tool);
+            tool.appendTo(toolbar);
+            console.log('OK');
+        });
 
         $("#selectacular-expr > input")
             .bind('change', function() {
@@ -140,16 +186,8 @@ function open() {
     }
 }
 
-function close() {
-    highlightSelection();
-    if (ui) {
-        ui.remove();
-        ui = undefined;
-    }
-}
-
 function select(target) {
-    if (target != selected) {
+    if (target !== selected) {
         $("#selectacular-path").empty().append(createPathFinder(target));
         $("#selectacular-expr > input").val(selectorForElement(target));
         selected = target;
@@ -198,21 +236,8 @@ function start() {
     return exports;
 }
 
-function tools() {
-    return $("#selectacular-tools");
-}
-
-function addTool(name, elem) {
-    $("#selectacular-tool-"+name).remove();
-    $('<div class="selectacular-tool"/>').attr("id", "selectacular-tool-"+name).append(elem).appendTo(tools());
-    return exports;
-}
-
 exports.start = start;
 exports.stop = stop;
 exports.open = open;
 exports.close = close;
 exports.select = select;
-exports.tools = tools;
-exports.addTool = addTool;
-exports.selector = selector;
