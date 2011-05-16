@@ -21,6 +21,7 @@ function addStyliciousToSelectacular() {
                     stylicious.selectacularAction(selector);
                 });
             },
+            required: true,
             close: true
         });
     });
