@@ -7,22 +7,22 @@
 
 /*global require, exports, localStorage */
 
-var $ = require("speakeasy/jquery").jQuery;
-
+var $ = require("speakeasy/jquery").jQuery,
+    storage = require("common/storage").storage;
 
 function styleId(type, id) {
     return "stylicious-" + type + "-" + id;
 }
 
 function getStyleSheet(type, id) {
-    return localStorage.getItem(styleId(type, id));
+    return storage.getItem(styleId(type, id));
 }
 
 function saveStyleSheet(type, id, content) {
     if (content) {
-        localStorage.setItem(styleId(type, id), content);
+        storage.setItem(styleId(type, id), content);
     } else {
-        localStorage.removeItem(styleId(type, id));
+        storage.removeItem(styleId(type, id));
     }
 }
 
