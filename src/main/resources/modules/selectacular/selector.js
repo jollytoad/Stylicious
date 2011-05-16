@@ -118,6 +118,10 @@ function highlightSelection(selector) {
     }
 }
 
+function updateTools(selector) {
+    $("#selectacular-tools .selectacular-tool.required").toggleClass("disabled", !selector);
+}
+
 function selector() {
     return $("#selectacular-expr > input").val();
 }
@@ -132,19 +136,20 @@ function close() {
 
 function toolAction(id, selector) {
     var options = tools.getTool(id);
-    if (options && options.action && selector) {
-        options.action(selector);
-    }
-    if (options.close) {
-        close();
+    if (options && (options.required ? !!selector : true)) {
+        if (options.action) {
+            options.action(selector);
+        }
+        if (options.close) {
+            close();
+        }
     }
 }
 
 function createTool(id, options) {
-    console.log(id, options);
     return $('<a/>', {
         href: "#",
-        "class": "selectacular-tool",
+        "class": "selectacular-tool" + (options.required ? " required" : ""),
         id: "selectacular-tool-" + id,
         title: options.desc,
         text: options.label,
@@ -155,23 +160,37 @@ function createTool(id, options) {
     });
 }
 
+function selectorbar() {
+    var inputbar = $('<div id="selectacular-expr"/>').appendTo("#selectacular-ui");
+
+    $('<input type="text"/>')
+        .bind('change', function() {
+            highlightSelection(this.value);
+            updateTools(this.value);
+        })
+        .bind('keydown', function() {
+            var self = this;
+            window.clearTimeout(keyTimeout);
+            keyTimeout = window.setTimeout(function() {
+                $(self).triggerHandler('change');
+            }, 1000);
+        })
+        .appendTo(inputbar);
+}
+
+function toolbar() {
+    var bar = $('<div id="selectacular-tools"/>').appendTo("#selectacular-ui");
+
+    tools.forEachTool(function(id, options) {
+        createTool(id, options).appendTo(bar);
+    });
+}
+
 function open() {
     if (!ui) {
         ui = $('<div id="selectacular-ui" class="bottom left"/>')
                 .append($('<div id="selectacular-path"/>'))
                 .appendTo("body");
-
-        $("#selectacular-expr > input")
-            .bind('change', function() {
-                highlightSelection(this.value);
-            })
-            .bind('keydown', function() {
-                var self = this;
-                window.clearTimeout(keyTimeout);
-                keyTimeout = window.setTimeout(function() {
-                    $(self).triggerHandler('change');
-                }, 1000);
-            });
 
         ui.bind("mouseenter.selectacular-clash", function(event) {
             var ui = $(this);
@@ -188,35 +207,10 @@ function open() {
     }
 }
 
-function selectorbar() {
-    var inputbar = $('<div id="selectacular-expr"/>').appendTo("#selectacular-ui");
-
-    $('<input type="text"/>')
-        .bind('change', function() {
-            highlightSelection(this.value);
-        })
-        .bind('keydown', function() {
-            var self = this;
-            window.clearTimeout(keyTimeout);
-            keyTimeout = window.setTimeout(function() {
-                $(self).triggerHandler('change');
-            }, 1000);
-        })
-        .appendTo(inputbar);
-}
-
-function toolbar() {
-    var toolbar = $('<div id="selectacular-tools"/>').appendTo("#selectacular-ui");
-
-    tools.forEachTool(function(id, options) {
-        createTool(id, options).appendTo(toolbar);
-    });
-}
-
 function select(target) {
     if (target !== selected) {
         $("#selectacular-path").empty().append(createPathFinder(target));
-        $("#selectacular-expr > input").val(selectorForElement(target));
+//        $("#selectacular-expr > input").val(selectorForElement(target));
         selected = target;
     }
     return exports;
@@ -229,9 +223,9 @@ function stop() {
 
 function freeze(target) {
     stop();
-    select(target);
     selectorbar();
     toolbar();
+    select(target);
     $("#selectacular-ui").unbind("mouseenter.selectacular-clash").addClass("selectacular-freeze");
     $("#selectacular-ui, #selectacular-ui *").addClass("SELECTACULAR");
     $("#selectacular-expr > input").trigger('change');
