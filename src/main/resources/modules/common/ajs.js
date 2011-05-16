@@ -3,7 +3,7 @@
  * @public
  */
 
-/*global exports */
+/*global exports, window */
 
 /**
  * The global AJS object
