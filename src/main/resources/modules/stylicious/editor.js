@@ -11,7 +11,8 @@ var stylicious = require("stylicious/stylesheets"),
     confluence = require("common/confluence"),
     $ = require("speakeasy/jquery").jQuery,
     AJS = require("common/ajs").AJS,
-    optional = require("common/optional").optional;
+    optional = require("common/optional").optional,
+    staticResourcesPrefix = require("speakeasy/host").staticResourcesPrefix;
 
 var types = {
     "global": "Everywhere",
@@ -26,8 +27,9 @@ var dialog,
 
 function forEachEditor(styleSheetFn) {
     $("textarea.stylicious-editor").each(function() {
-        var editor = $(this);
-        styleSheetFn(editor.attr("data-type"), editor.attr("data-id"), editor.val());
+        var editor = $(this),
+            mirror = editor.data("codemirror");
+        styleSheetFn(editor.attr("data-type"), editor.attr("data-id"), mirror ? mirror.getCode() : editor.val());
     });
 }
 
@@ -38,19 +40,24 @@ function panelContent(type, id) {
 
 function replaceSelection(text) {
     return function() {
-        this.focus();
-        if ('selectionStart' in this) {
-            // Most browsers
-            var start = this.selectionStart;
-            this.value = this.value.slice(0, start) + text + this.value.slice(this.selectionEnd);
-            this.selectionStart = start;
-            this.selectionEnd = start + text.length;
-        } else if (document.selection) {
-            // IE
-            document.selection.createRange().text = text;
+        var mirror = $.data(this, "codemirror");
+        if (mirror) {
+            mirror.replaceSelection(text);
         } else {
-            // Unsupported
-            this.value += text;
+            this.focus();
+            if ('selectionStart' in this) {
+                // Most browsers
+                var start = this.selectionStart;
+                this.value = this.value.slice(0, start) + text + this.value.slice(this.selectionEnd);
+                this.selectionStart = start;
+                this.selectionEnd = start + text.length;
+            } else if (document.selection) {
+                // IE
+                document.selection.createRange().text = text;
+            } else {
+                // Unsupported
+                this.value += text;
+            }
         }
     };
 }
@@ -107,11 +114,16 @@ function openEditor() {
         closeEditor();
     });
 
+    optional("common/codemirror", function(cm) {
+        $("textarea.stylicious-editor").each(function() {
+            cm.enhanceTextArea(this);
+        });
+    });
+
     dialog.show();
 }
 
 function selectacularAction(newSelector) {
-    console.log(newSelector);
     selector = newSelector;
     if (dialog) {
         dialog.show();
