@@ -9,7 +9,7 @@
 /*global require, document */
 
 var stylicious = require("stylicious/stylesheets"),
-    confluence = require("stylicious/confluence"),
+    confluence = require("common/confluence"),
     $ = require("speakeasy/jquery").jQuery;
 
 $(document).ready(function() {

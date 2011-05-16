@@ -8,7 +8,7 @@
 /*global require, exports, document */
 
 var stylicious = require("stylicious/stylesheets"),
-    confluence = require("stylicious/confluence"),
+    confluence = require("common/confluence"),
     $ = require("speakeasy/jquery").jQuery,
     AJS = require("common/ajs").AJS,
     optional = require("common/optional").optional;
@@ -79,7 +79,7 @@ function openEditor() {
     stylicious.forEachStyleSheet(confluence, addEditorPanel);
 
     if (selector) {
-        dialog.addButton("Insert", function(dialog) {
+        dialog.addButton("Insert selector", function(dialog) {
             insertSelector();
         });
     }
