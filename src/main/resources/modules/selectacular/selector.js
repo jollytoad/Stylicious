@@ -157,20 +157,9 @@ function createTool(id, options) {
 
 function open() {
     if (!ui) {
-        var toolbar = $('<div id="selectacular-tools"/>');
-
         ui = $('<div id="selectacular-ui" class="bottom left"/>')
                 .append($('<div id="selectacular-path"/>'))
-                .append($('<div id="selectacular-expr"><input type="text"/></div>'))
-                .append(toolbar)
                 .appendTo("body");
-
-        tools.forEachTool(function(id, options) {
-            var tool = createTool(id, options);
-            console.log(tool);
-            tool.appendTo(toolbar);
-            console.log('OK');
-        });
 
         $("#selectacular-expr > input")
             .bind('change', function() {
@@ -183,7 +172,45 @@ function open() {
                     $(self).triggerHandler('change');
                 }, 1000);
             });
+
+        ui.bind("mouseenter.selectacular-clash", function(event) {
+            var ui = $(this);
+            if (ui.is(".bottom.left")) {
+                ui.removeClass("bottom").addClass("top");
+            } else if (ui.is(".top.left")) {
+                ui.removeClass("left").addClass("right");
+            } else if (ui.is(".top.right")) {
+                ui.removeClass("top").addClass("bottom");
+            } else if (ui.is(".bottom.right")) {
+                ui.removeClass("right").addClass("left");
+            }
+        });
     }
+}
+
+function selectorbar() {
+    var inputbar = $('<div id="selectacular-expr"/>').appendTo("#selectacular-ui");
+
+    $('<input type="text"/>')
+        .bind('change', function() {
+            highlightSelection(this.value);
+        })
+        .bind('keydown', function() {
+            var self = this;
+            window.clearTimeout(keyTimeout);
+            keyTimeout = window.setTimeout(function() {
+                $(self).triggerHandler('change');
+            }, 1000);
+        })
+        .appendTo(inputbar);
+}
+
+function toolbar() {
+    var toolbar = $('<div id="selectacular-tools"/>').appendTo("#selectacular-ui");
+
+    tools.forEachTool(function(id, options) {
+        createTool(id, options).appendTo(toolbar);
+    });
 }
 
 function select(target) {
@@ -203,6 +230,9 @@ function stop() {
 function freeze(target) {
     stop();
     select(target);
+    selectorbar();
+    toolbar();
+    $("#selectacular-ui").unbind("mouseenter.selectacular-clash").addClass("selectacular-freeze");
     $("#selectacular-ui, #selectacular-ui *").addClass("SELECTACULAR");
     $("#selectacular-expr > input").trigger('change');
 }
@@ -235,6 +265,12 @@ function start() {
 
     return exports;
 }
+
+tools.addTool("close-selectacular", {
+    label: "x",
+    desc: "Close Selectacular",
+    close: true
+});
 
 exports.start = start;
 exports.stop = stop;
