@@ -23,4 +23,15 @@
         <resource type="download" name="selectacular.css" location="css/selectacular.css"/>
         <context>atl.general</context>
     </scoped-web-resource>
+
+    <scoped-web-resource key="codemirror2">
+        <resource type="download" name="codemirror.js" location="codemirror2/lib/codemirror.js"/>
+        <resource type="download" name="codemirror.css" location="codemirror2/lib/codemirror.css"/>
+        <resource type="download" name="css.js" location="codemirror2/mode/css/css.js"/>
+        <resource type="download" name="htmlmixed.js" location="codemirror2/mode/htmlmixed/htmlmixed.js"/>
+        <resource type="download" name="javascript.js" location="codemirror2/mode/javascript/javascript.js"/>
+        <resource type="download" name="velocity.js" location="codemirror2/mode/velocity/velocity.js"/>
+        <resource type="download" name="xml.js" location="codemirror2/mode/xml/xml.js"/>
+        <resource type="download" name="theme.css" location="codemirror2/theme/default.css"/>
+    </scoped-web-resource>
 </atlassian-plugin>
