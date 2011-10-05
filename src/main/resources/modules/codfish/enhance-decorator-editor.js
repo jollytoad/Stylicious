@@ -10,11 +10,9 @@ var $ = require("speakeasy/jquery").jQuery,
     codemirror = require("common/codemirror2");
 
 $(function() {
-    var form = $('form[name="editdecorator"]');
-    $('textarea[name="content"]', form).each(function() {
+    $('form[name="editdecorator"] textarea[name="content"]').each(function() {
         codemirror.enhanceTextArea(this, "velocity", function(cm) {
-            cm.getWrapperElement();
-
+            var form = $(cm.getWrapperElement()).closest('form');
             var container = $('<div class="codemirror-mode-switch">Highlight mode: </div>').insertBefore(form);
 
             function addMode(mode, label) {
