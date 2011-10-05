@@ -24,28 +24,38 @@ function usingCodeMirror(callback) {
     }
 }
 
-function enhanceTextArea(textarea, mode) {
+function enhanceTextArea(textarea, mode, callback) {
     usingCodeMirror(function(CodeMirror) {
-        var mirror;
+        var $textarea = $(textarea),
+            mirror;
 
-        // Copy font styling from textarea to CodeMirror
-        function ready() {
-            function getCSS( elem, props ) {
-                var css = {};
-                $.each(props, function(i, p) {
-                    css[p] = elem.css(p);
-                });
-                return css;
-            }
-
-            $('.editbox', mirror.win.document).css(getCSS($(textarea), ['font-family', 'font-size', 'font-style', 'font-variant', 'font-weight', 'line-height']));
+        function getCSS() {
+            var css = {};
+            $.each(arguments, function(i, p) {
+                css[p] = $textarea.css(p);
+            });
+            return css;
         }
 
+        var wrapperCSS = getCSS('font-family', 'font-size', 'font-style', 'font-variant', 'font-weight', 'line-height', 'color'),
+            scrollerCSS = getCSS('width', 'height');
+
         mirror = CodeMirror.fromTextArea(textarea, {
-            mode: mode
+            mode: mode,
+            indentUnit: 4,
+            tabMode: 'shift',
+            enterMode: 'keep'
         });
 
+        $(mirror.getWrapperElement()).css(wrapperCSS);
+        $(mirror.getScrollerElement()).css(scrollerCSS);
+        mirror.refresh();
+        
         $(textarea).data('codemirror', mirror);
+
+        if ($.isFunction(callback)) {
+            callback(mirror);
+        }
     });
 }
 
