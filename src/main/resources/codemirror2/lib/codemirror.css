@@ -66,3 +66,11 @@ span.CodeMirror-selected {
 
 .CodeMirror-matchingbracket {color: #0f0 !important;}
 .CodeMirror-nonmatchingbracket {color: #f22 !important;}
+
+/* Additions for use in Confluence */
+.CodeMirror {
+    border: 1px solid #333;
+}
+.CodeMirror pre {
+    overflow: visible;
+}
