@@ -34,4 +34,13 @@
         <resource type="download" name="xml.js" location="codemirror2/mode/xml/xml.js"/>
         <resource type="download" name="theme.css" location="codemirror2/theme/default.css"/>
     </scoped-web-resource>
+
+    <scoped-web-resource key="codemirror2-themes">
+        <resource type="download" name="cobalt.css" location="codemirror2/theme/cobalt.css"/>
+        <resource type="download" name="eclipse.css" location="codemirror2/theme/eclipse.css"/>
+        <resource type="download" name="elegant.css" location="codemirror2/theme/elegant.css"/>
+        <resource type="download" name="neat.css" location="codemirror2/theme/neat.css"/>
+        <resource type="download" name="night.css" location="codemirror2/theme/night.css"/>
+    </scoped-web-resource>
+
 </atlassian-plugin>

@@ -13,26 +13,31 @@ $(function() {
     $('form[name="editdecorator"] textarea[name="content"]').each(function() {
         codemirror.enhanceTextArea(this, "velocity", function(cm) {
             var form = $(cm.getWrapperElement()).closest('form');
-            var container = $('<div class="codemirror-mode-switch">Highlight mode: </div>').insertBefore(form);
 
-            function addMode(mode, label) {
-                var radio = $('<input type="radio" name="codemirror-mode"/>').attr('value', mode);
+//            var container = $('<div class="codemirror-mode-switch">Highlight mode: </div>').insertBefore(form);
+//
+//            function addMode(mode, label) {
+//                var radio = $('<input type="radio" name="codemirror-mode"/>').attr('value', mode);
+//
+//                $('<label/>').text(label).prepend(radio).appendTo(container);
+//
+//                radio.bind("click", function() {
+//                    if (this.checked && cm.getOption("mode") !== this.value) {
+//                        cm.setOption("mode", this.value);
+//                    }
+//                });
+//
+//                if (cm.getOption("mode") === mode) {
+//                    radio.attr("checked", true);
+//                }
+//            }
 
-                $('<label/>').text(label).prepend(radio).appendTo(container);
+            codemirror.switcher(cm, "mode", "Hightlight Mode", "radio")
+                .addOption("htmlmixed", "HTML")
+                .addOption("velocity", "Velocity")
+                .insertBefore(form);
 
-                radio.bind("click", function() {
-                    if (this.checked && cm.getOption("mode") !== this.value) {
-                        cm.setOption("mode", this.value);
-                    }
-                });
-
-                if (cm.getOption("mode") === mode) {
-                    radio.attr("checked", true);
-                }
-            }
-
-            addMode("htmlmixed", "HTML");
-            addMode("velocity", "Velocity");
+            codemirror.themeSwitcher(cm).insertAfter(form);
         });
     });
 });
