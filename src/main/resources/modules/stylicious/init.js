@@ -1,10 +1,10 @@
 /**
- * Stylicious & Selectacular Web Items
+ * Register Stylicious with Selectacular and wire up Stylicious Web Item
  *
  * @context atl.general
  */
 
-/*! Copyright 2011 Mark Gibson */
+/*! Copyright 2012 Mark Gibson */
 
 /*global require, document, setTimeout */
 
@@ -37,12 +37,4 @@ $(".stylicious-web-item").live('click', function(event) {
     },0);
 });
 
-$(".selectacular-web-item").live('click', function(event) {
-    event.preventDefault();
-    setTimeout(function() {
-        addStyliciousToSelectacular();
-        optional("selectacular/selector", function(selectacular) {
-            selectacular.start();
-        });
-    },0);
-});
+$(document).bind("selectacular", addStyliciousToSelectacular);

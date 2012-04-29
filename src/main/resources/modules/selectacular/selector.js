@@ -9,7 +9,8 @@
 
 var $ = require("speakeasy/jquery").jQuery,
     AJS = require("common/ajs").AJS,
-    tools = require("selectacular/tools");
+    tools = require("selectacular/tools"),
+    selectacular = exports;
 
 var ui,
     selected,
@@ -134,13 +135,23 @@ function close() {
     }
 }
 
-function toolAction(id, selector) {
+function toolAction(id, selector, event) {
     var options = tools.getTool(id);
     if (options && (options.required ? !!selector : true)) {
+        var closeAfter = options.close;
+
+        if (options.handler) {
+            event.selector = selector;
+            options.handler(event, selectacular);
+        } else {
+            event.preventDefault();
+        }
+
         if (options.action) {
             options.action(selector);
         }
-        if (options.close) {
+
+        if (closeAfter) {
             close();
         }
     }
@@ -154,8 +165,7 @@ function createTool(id, options) {
         title: options.desc,
         text: options.label,
         click: function(event) {
-            event.preventDefault();
-            toolAction(id, selector());
+            toolAction(id, selector(), event);
         }
     });
 }
@@ -265,6 +275,8 @@ tools.addTool("close-selectacular", {
     desc: "Close Selectacular",
     close: true
 });
+
+$.extend(exports, tools);
 
 exports.start = start;
 exports.stop = stop;
