@@ -8,9 +8,7 @@
 /*global require, exports, document, window */
 
 var $ = require("speakeasy/jquery").jQuery,
-    AJS = require("common/ajs").AJS,
-    tools = require("selectacular/tools"),
-    selectacular = exports;
+    tools = require("selectacular/tools");
 
 var ui,
     selected,
@@ -18,22 +16,32 @@ var ui,
     selectTimeout;
 
 function toggleSelectorOption(event) {
-    var selector = '';
+    var selector = [];
+    var prevNode;
 
     $(this).toggleClass('select');
 
-    function add() {
-        selector += $(this).text();
-    }
+    $('#selectacular-path .selector:has(.select)').each(function() {
+        var node = $(this).data("node");
+        var step = "";
 
-    $('#selectacular-path li:has(.select)').each(function() {
+        if (prevNode === node.parentNode) {
+            selector.push(">");
+        }
+        prevNode = node;
+
+        function add() {
+            step += $(this).text();
+        }
+
         $('.tag.select', this).each(add);
         $('.id.select', this).each(add);
         $('.class.select', this).each(add);
-        selector += $(this).nextUntil("li:has(.select)").length === 1 ? ' > ' : ' ';
+
+        selector.push(step);
     });
 
-    $('#selectacular-expr > input').val(selector).trigger('change');
+    $('#selectacular-expr > input').val(selector.join(" ")).trigger('change');
 
     return false;
 }
@@ -88,7 +96,7 @@ function createPathFinder( elem ) {
     }
 
     while ( elem ) {
-        step = $('<li class="selector"/>');
+        step = $('<li class="selector"/>').data("node", elem);
         tag = elem.nodeName.toLowerCase();
 
         if ( elem.id ) {
@@ -142,7 +150,7 @@ function toolAction(id, selector, event) {
 
         if (options.handler) {
             event.selector = selector;
-            options.handler(event, selectacular);
+            options.handler(event, exports);
         } else {
             event.preventDefault();
         }
@@ -219,7 +227,7 @@ function open() {
 
 function select(target) {
     if (target !== selected) {
-        $("#selectacular-path").empty().append(createPathFinder(target));
+        $("#selectacular-path").empty().append(createPathFinder(target)).trigger("redraw.selectacular", [ exports ]);
 //        $("#selectacular-expr > input").val(selectorForElement(target));
         selected = target;
     }
@@ -283,3 +291,7 @@ exports.stop = stop;
 exports.open = open;
 exports.close = close;
 exports.select = select;
+exports.selector = selector;
+exports.selected = function() {
+    return selected;
+};
